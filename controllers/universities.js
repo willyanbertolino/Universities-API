@@ -43,9 +43,16 @@ const createUniversity = async (req, res) => {
 };
 
 const getAllUniversities = async (req, res) => {
-  const universities = await Universities.find({});
+  let page = Number(req.query.page);
+  if (!page || page < 0) {
+    page = 0;
+  }
 
-  res.status(StatusCodes.OK).json({ universities });
+  const universities = await Universities.find()
+    .skip((page - 1) * 20)
+    .limit(20);
+
+  res.status(StatusCodes.OK).json({ universities, count: universities.length });
 };
 
 const getSingleUniversity = async (req, res) => {
@@ -54,7 +61,7 @@ const getSingleUniversity = async (req, res) => {
   const university = await Universities.findOne({ _id: id });
 
   if (!university) {
-    throw new CustomError.NotFoundError(
+    throw new CustomError.BadRequestError(
       `Sorry, there is no university with id : ${id}`
     );
   }
@@ -75,7 +82,7 @@ const updateUniversity = async (req, res) => {
   );
 
   if (!university) {
-    throw new CustomError.NotFoundError(`No university with id : ${id}`);
+    throw new CustomError.BadRequestError(`No university with id : ${id}`);
   }
 
   res.status(StatusCodes.OK).json({ university });
@@ -87,7 +94,7 @@ const deleteUniversity = async (req, res) => {
   const university = await Universities.findOne({ _id: id });
 
   if (!university) {
-    throw new CustomError.NotFoundError(`No university with id : ${id}`);
+    throw new CustomError.BadRequestError(`No university with id : ${id}`);
   }
 
   await university.remove();
