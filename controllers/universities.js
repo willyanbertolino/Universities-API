@@ -1,4 +1,6 @@
 const Universities = require('../models/universities');
+const { StatusCodes } = require('http-status-codes');
+const CustomError = require('../errors');
 
 const createUniversity = async (req, res) => {
   const {
@@ -17,7 +19,7 @@ const createUniversity = async (req, res) => {
     domains.length === 0 ||
     web_pages.length === 0
   )
-    throw new CustomError.NotFoundError('Please provide all informations.');
+    throw new CustomError.BadRequestError('Please provide all informations.');
 
   const repeatedUniversity = await Universities.findOne({
     country,
@@ -26,7 +28,7 @@ const createUniversity = async (req, res) => {
   });
 
   if (repeatedUniversity) {
-    throw new CustomError.NotFoundError('University already exists');
+    throw new CustomError.BadRequestError('University already exists');
   }
 
   const university = await Universities.create({
@@ -37,13 +39,13 @@ const createUniversity = async (req, res) => {
     web_pages,
     name,
   });
-  res.status(200).json({ university });
+  res.status(StatusCodes.CREATED).json({ university });
 };
 
 const getAllUniversities = async (req, res) => {
   const universities = await Universities.find({});
 
-  res.status(200).json({ universities });
+  res.status(StatusCodes.OK).json({ universities });
 };
 
 const getSingleUniversity = async (req, res) => {
@@ -57,7 +59,7 @@ const getSingleUniversity = async (req, res) => {
     );
   }
 
-  res.status(200).json({ university });
+  res.status(StatusCodes.OK).json({ university });
 };
 
 const updateUniversity = async (req, res) => {
@@ -76,7 +78,7 @@ const updateUniversity = async (req, res) => {
     throw new CustomError.NotFoundError(`No university with id : ${id}`);
   }
 
-  res.status(200).json({ university });
+  res.status(StatusCodes.OK).json({ university });
 };
 
 const deleteUniversity = async (req, res) => {
@@ -89,7 +91,7 @@ const deleteUniversity = async (req, res) => {
   }
 
   await university.remove();
-  res.status(200).json({ msg: 'Success! University removed.' });
+  res.status(StatusCodes.OK).json({ msg: 'Success! University removed.' });
 };
 
 module.exports = {
