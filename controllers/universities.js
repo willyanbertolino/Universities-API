@@ -44,12 +44,12 @@ const createUniversity = async (req, res) => {
 
 const getAllUniversities = async (req, res) => {
   let page = Number(req.query.page);
-  if (!page || page < 0) {
-    page = 0;
+  if (!page || page < 1) {
+    page = 1;
   }
 
   const universities = await Universities.find()
-    .skip((page - 1) * 20)
+    .skip(page * 20)
     .limit(20);
 
   res.status(StatusCodes.OK).json({ universities, count: universities.length });
@@ -71,10 +71,11 @@ const getSingleUniversity = async (req, res) => {
 
 const updateUniversity = async (req, res) => {
   const { id } = req.params;
+  const { domains, name, web_pages } = req.body;
 
   const university = await Universities.findOneAndUpdate(
     { _id: id },
-    req.body,
+    { domains, name, web_pages },
     {
       new: true,
       runValidators: true,
