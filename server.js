@@ -21,12 +21,13 @@ app.use('/api/v1/universities', universitiesRouter);
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);
 
+const mongoURI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/';
 const port = process.env.PORT || 5000;
 
 const start = async () => {
   try {
     // connect MongoDB
-    await mongoose.connect(process.env.MONGO_URI, {
+    await mongoose.connect(mongoURI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });

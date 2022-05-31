@@ -1,4 +1,4 @@
-const Universities = require('../models/universities');
+const Universities = require('../models/Universities');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 
